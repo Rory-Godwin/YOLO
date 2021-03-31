@@ -7,7 +7,6 @@ from keras.callbacks import (EarlyStopping, ModelCheckpoint, ReduceLROnPlateau,
 from keras.layers import Input, Lambda
 from keras.models import Model
 from keras.optimizers import Adam
-#from tensorflow.keras.models import Sequential
 
 from nets.loss import yolo_loss
 from nets.yolo4 import yolo_body
@@ -194,7 +193,7 @@ if __name__ == "__main__":
     #   classes和anchor的路径，非常重要
     #   训练前一定要修改classes_path，使其对应自己的数据集
     #----------------------------------------------------#
-    classes_path = 'model_data/new_classes.txt'
+    classes_path = 'model_data/new_classes.txt'    
     anchors_path = 'model_data/yolo_anchors.txt'
     #------------------------------------------------------#
     #   权值文件请看README，百度网盘下载
@@ -202,10 +201,6 @@ if __name__ == "__main__":
     #   预测的东西都不一样了自然维度不匹配
     #------------------------------------------------------#
     weights_path = 'model_data/yolo4_voc_weights.h5'
-    
-##############################################################################
-#######------------------create new empty weight file------------------#######
-##############################################################################    
     #------------------------------------------------------#
     #   训练用图片大小
     #   一般在416x416和608x608选择
@@ -338,16 +333,13 @@ if __name__ == "__main__":
                 epochs=Freeze_epoch,
                 initial_epoch=Init_epoch,
                 callbacks=[logging, checkpoint, reduce_lr, early_stopping])
-##############################################################################
-#######-----------change model save path to new weights file-----------#######
-##############################################################################
-        model.save_weights(weights_path)
+        model.save_weights(log_dir + 'trained_weights_stage_1.h5')
 
     for i in range(freeze_layers): model_body.layers[i].trainable = True
 
     if True:
         Freeze_epoch = 11
-        Epoch = 30
+        Epoch = 31
         batch_size = 8
         learning_rate_base = 1e-4
 
@@ -379,7 +371,4 @@ if __name__ == "__main__":
                 epochs=Epoch,
                 initial_epoch=Freeze_epoch,
                 callbacks=[logging, checkpoint, reduce_lr, early_stopping])
-##############################################################################
-#######-----------change model save path to new weights file-----------#######
-##############################################################################
-        model.save_weights(weights_path)
+        model.save_weights(log_dir + 'last1.h5')
