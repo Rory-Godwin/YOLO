@@ -47,8 +47,8 @@ def DarknetConv2D_BN_Leaky(*args, **kwargs):
 #######################################################################################
 #######                             RG MOD1                                     #######
 #######                           30/03/2021                                    #######
-#######     Lines commented out 57,100,102,104,107,113,114,117,118,120,146      #######
-#######     Lines commented in                                                  #######
+#######     Lines commented out 145                                             #######
+#######     Lines commented in 100,102,104,107,113,114,146                      #######
 #######################################################################################
 
 def make_five_convs(x, num_filters):
@@ -142,7 +142,7 @@ def yolo_body(inputs, num_anchors, num_classes):
     #---------------------------------------------------#
     P5_output = DarknetConv2D_BN_Leaky(1024, (3,3))(P5)
     P5_output = DarknetConv2D(num_anchors*(num_classes+5), (1,1), kernel_initializer=keras.initializers.normal(mean=0.0, stddev=0.01))(P5_output)
-    #return Model(inputs, [P5_output, P4_output])
+    
     return Model(inputs, [P5_output, P4_output, P3_output])
    
 
