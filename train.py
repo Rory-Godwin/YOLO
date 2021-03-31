@@ -347,7 +347,7 @@ if __name__ == "__main__":
 
     if True:
         Freeze_epoch = 11
-        Epoch = 11
+        Epoch = 30
         batch_size = 8
         learning_rate_base = 1e-4
 
