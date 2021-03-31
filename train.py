@@ -306,7 +306,7 @@ if __name__ == "__main__":
     #------------------------------------------------------#
     if True:
         Init_epoch = 0
-        Freeze_epoch = 3
+        Freeze_epoch = 11
         batch_size = 8
         learning_rate_base = 1e-3
 
@@ -346,7 +346,7 @@ if __name__ == "__main__":
     for i in range(freeze_layers): model_body.layers[i].trainable = True
 
     if True:
-        Freeze_epoch = 3
+        Freeze_epoch = 11
         Epoch = 100
         batch_size = 8
         learning_rate_base = 1e-4
