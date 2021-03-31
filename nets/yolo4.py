@@ -44,17 +44,17 @@ def DarknetConv2D_BN_Leaky(*args, **kwargs):
 #   进行五次卷积
 #---------------------------------------------------# 
 
-###############################################################################
-#######                             RG MOD1                             #######
-#######                           30/03/2021                            #######
-#######     Lines commented out 58, 59, 60, 78, 79, 85, 86              #######
-#######     Lines commented in                                          #######
-###############################################################################
+#######################################################################################
+#######                             RG MOD1                                     #######
+#######                           30/03/2021                                    #######
+#######     Lines commented out 57,100,102,104,107,113,114,117,118,120,146      #######
+#######     Lines commented in                                                  #######
+#######################################################################################
 
 def make_five_convs(x, num_filters):
     # 五次卷积
     x = DarknetConv2D_BN_Leaky(num_filters, (1,1))(x)
-    x = DarknetConv2D_BN_Leaky(num_filters*2, (3,3))(x)
+    #x = DarknetConv2D_BN_Leaky(num_filters*2, (3,3))(x)
     #x = DarknetConv2D_BN_Leaky(num_filters, (1,1))(x)
     #x = DarknetConv2D_BN_Leaky(num_filters*2, (3,3))(x)
     #x = DarknetConv2D_BN_Leaky(num_filters, (1,1))(x)
@@ -97,27 +97,27 @@ def yolo_body(inputs, num_anchors, num_classes):
     P4 = make_five_convs(P4,256)
 
     # 26,26,256 -> 26,26,128 -> 52,52,128
-    P4_upsample = compose(DarknetConv2D_BN_Leaky(128, (1,1)), UpSampling2D(2))(P4)
+    #P4_upsample = compose(DarknetConv2D_BN_Leaky(128, (1,1)), UpSampling2D(2))(P4)
     # 52,52,256 -> 52,52,128
-    P3 = DarknetConv2D_BN_Leaky(128, (1,1))(feat1)
+    #P3 = DarknetConv2D_BN_Leaky(128, (1,1))(feat1)
     # 52,52,128 + 52,52,128 -> 52,52,256
-    P3 = Concatenate()([P3, P4_upsample])
+    #P3 = Concatenate()([P3, P4_upsample])
 
     # 52,52,256 -> 52,52,128 -> 52,52,256 -> 52,52,128 -> 52,52,256 -> 52,52,128
-    P3 = make_five_convs(P3,128)
+    #P3 = make_five_convs(P3,128)
     
     #---------------------------------------------------#
     #   第三个特征层
     #   y3=(batch_size,52,52,3,85)
     #---------------------------------------------------#
-    P3_output = DarknetConv2D_BN_Leaky(256, (3,3))(P3)
-    P3_output = DarknetConv2D(num_anchors*(num_classes+5), (1,1), kernel_initializer=keras.initializers.normal(mean=0.0, stddev=0.01))(P3_output)
+    #P3_output = DarknetConv2D_BN_Leaky(256, (3,3))(P3)
+    #P3_output = DarknetConv2D(num_anchors*(num_classes+5), (1,1), kernel_initializer=keras.initializers.normal(mean=0.0, stddev=0.01))(P3_output)
 
     # 52,52,128 -> 26,26,256
-    P3_downsample = ZeroPadding2D(((1,0),(1,0)))(P3)
-    P3_downsample = DarknetConv2D_BN_Leaky(256, (3,3), strides=(2,2))(P3_downsample)
+    #P3_downsample = ZeroPadding2D(((1,0),(1,0)))(P3)
+    #P3_downsample = DarknetConv2D_BN_Leaky(256, (3,3), strides=(2,2))(P3_downsample)
     # 26,26,256 + 26,26,256 -> 26,26,512
-    P4 = Concatenate()([P3_downsample, P4])
+    #P4 = Concatenate()([P3_downsample, P4])
     # 26,26,512 -> 26,26,256 -> 26,26,512 -> 26,26,256 -> 26,26,512 -> 26,26,256
     P4 = make_five_convs(P4,256)
     
@@ -142,8 +142,9 @@ def yolo_body(inputs, num_anchors, num_classes):
     #---------------------------------------------------#
     P5_output = DarknetConv2D_BN_Leaky(1024, (3,3))(P5)
     P5_output = DarknetConv2D(num_anchors*(num_classes+5), (1,1), kernel_initializer=keras.initializers.normal(mean=0.0, stddev=0.01))(P5_output)
-
-    return Model(inputs, [P5_output, P4_output, P3_output])
+    return Model(inputs, [P5_output, P4_output])
+   #return Model(inputs, [P5_output, P4_output, P3_output])
+   
 
 #---------------------------------------------------#
 #   将预测值的每个特征层调成真实值
