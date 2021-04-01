@@ -45,18 +45,18 @@ def DarknetConv2D_BN_Leaky(*args, **kwargs):
 #---------------------------------------------------# 
 
 #######################################################################################
-#######                             RG MOD6                                     #######
+#######                             RG MOD7                                     #######
 #######                           01/04/2021                                    #######
-#######     OUT 60,78,79,85,86,117,118,120,132,133,135                          #######
-#######     MOD 57,58,81,82,83     IN 59                                        #######
+#######     OUT 59,60,78,79,85,86,117,118,120,132,133,135                       #######
+#######     MOD 57      IN 58                                                   #######
 #######################################################################################
 
 def make_five_convs(x, num_filters):
     # 五次卷积
     x = DarknetConv2D_BN_Leaky(num_filters, (1,1))(x)
-    x = MaxPooling2D(pool_size=(7,7), strides=(1,1), padding='same')(x) #x = DarknetConv2D_BN_Leaky(num_filters*2, (3,3))(x)
-    x = MaxPooling2D(pool_size=(3,3), strides=(1,1), padding='same')(x)#x = DarknetConv2D_BN_Leaky(num_filters, (1,1))(x)
-    x = DarknetConv2D_BN_Leaky(num_filters*2, (3,3))(x)
+    x = MaxPooling2D(pool_size=(9,9), strides=(1,1), padding='same')(x) #x = DarknetConv2D_BN_Leaky(num_filters*2, (3,3))(x)
+    x = DarknetConv2D_BN_Leaky(num_filters, (1,1))(x)
+    #x = DarknetConv2D_BN_Leaky(num_filters*2, (3,3))(x)
     #x = DarknetConv2D_BN_Leaky(num_filters, (1,1))(x)
     return x
 
@@ -75,12 +75,12 @@ def yolo_body(inputs, num_anchors, num_classes):
 
     # 13,13,1024 -> 13,13,512 -> 13,13,1024 -> 13,13,512 -> 13,13,2048 -> 13,13,512 -> 13,13,1024 -> 13,13,512
     P5 = DarknetConv2D_BN_Leaky(512, (1,1))(feat3)
-   # P5 = DarknetConv2D_BN_Leaky(1024, (3,3))(P5)
+    #P5 = DarknetConv2D_BN_Leaky(1024, (3,3))(P5)
     #P5 = DarknetConv2D_BN_Leaky(512, (1,1))(P5)
     # 使用了SPP结构，即不同尺度的最大池化后堆叠。
-    maxpool1 = MaxPooling2D(pool_size=(7,7), strides=(1,1), padding='same')(P5)
-    maxpool2 = MaxPooling2D(pool_size=(5,5), strides=(1,1), padding='same')(P5)
-    maxpool3 = MaxPooling2D(pool_size=(3,3), strides=(1,1), padding='same')(P5)
+    maxpool1 = MaxPooling2D(pool_size=(13,13), strides=(1,1), padding='same')(P5)
+    maxpool2 = MaxPooling2D(pool_size=(9,9), strides=(1,1), padding='same')(P5)
+    maxpool3 = MaxPooling2D(pool_size=(5,5), strides=(1,1), padding='same')(P5)
     P5 = Concatenate()([maxpool1, maxpool2, maxpool3, P5])
     #P5 = DarknetConv2D_BN_Leaky(512, (1,1))(P5)
     #P5 = DarknetConv2D_BN_Leaky(1024, (3,3))(P5)
@@ -353,5 +353,3 @@ def yolo_eval(yolo_outputs,
     classes_ = K.concatenate(classes_, axis=0)
 
     return boxes_, scores_, classes_
-
-
