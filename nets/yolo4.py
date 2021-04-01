@@ -45,10 +45,10 @@ def DarknetConv2D_BN_Leaky(*args, **kwargs):
 #---------------------------------------------------# 
 
 #######################################################################################
-#######                             RG MOD3                                     #######
-#######                           31/03/2021                                    #######
-#######     Lines commented out 145                                             #######
-#######     Lines commented in 100,102,104,107,113,114,146                      #######
+#######                             RG MOD4                                     #######
+#######                           01/04/2021                                    #######
+#######     OUT 57,58,59,60,78,79,85,86,117,118,120,132,133,135                 #######
+#######################################################################################
 #######################################################################################
 
 def make_five_convs(x, num_filters):
@@ -129,10 +129,10 @@ def yolo_body(inputs, num_anchors, num_classes):
     P4_output = DarknetConv2D(num_anchors*(num_classes+5), (1,1), kernel_initializer=keras.initializers.normal(mean=0.0, stddev=0.01))(P4_output)
     
     # 26,26,256 -> 13,13,512
-    P4_downsample = ZeroPadding2D(((1,0),(1,0)))(P4)
-    P4_downsample = DarknetConv2D_BN_Leaky(512, (3,3), strides=(2,2))(P4_downsample)
+    #P4_downsample = ZeroPadding2D(((1,0),(1,0)))(P4)
+    #P4_downsample = DarknetConv2D_BN_Leaky(512, (3,3), strides=(2,2))(P4_downsample)
     # 13,13,512 + 13,13,512 -> 13,13,1024
-    P5 = Concatenate()([P4_downsample, P5])
+    #P5 = Concatenate()([P4_downsample, P5])
     # 13,13,1024 -> 13,13,512 -> 13,13,1024 -> 13,13,512 -> 13,13,1024 -> 13,13,512
     P5 = make_five_convs(P5,512)
     
