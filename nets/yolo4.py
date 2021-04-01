@@ -45,17 +45,17 @@ def DarknetConv2D_BN_Leaky(*args, **kwargs):
 #---------------------------------------------------# 
 
 #######################################################################################
-#######                             RG MOD4                                     #######
+#######                             RG MOD5                                     #######
 #######                           01/04/2021                                    #######
-#######     OUT 57,58,59,60,78,79,85,86,117,118,120,132,133,135                 #######
-#######################################################################################
+#######     OUT 59,60,78,79,85,86,117,118,120,132,133,135                       #######
+#######     MOD 57      IN 58                                                   #######
 #######################################################################################
 
 def make_five_convs(x, num_filters):
     # 五次卷积
     x = DarknetConv2D_BN_Leaky(num_filters, (1,1))(x)
-    #x = DarknetConv2D_BN_Leaky(num_filters*2, (3,3))(x)
-    #x = DarknetConv2D_BN_Leaky(num_filters, (1,1))(x)
+    maxpool3 = MaxPooling2D(pool_size=(5,5), strides=(1,1), padding='same')(x) #x = DarknetConv2D_BN_Leaky(num_filters*2, (3,3))(x)
+    x = DarknetConv2D_BN_Leaky(num_filters, (1,1))(x)
     #x = DarknetConv2D_BN_Leaky(num_filters*2, (3,3))(x)
     #x = DarknetConv2D_BN_Leaky(num_filters, (1,1))(x)
     return x
