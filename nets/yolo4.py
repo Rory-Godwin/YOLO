@@ -45,10 +45,10 @@ def DarknetConv2D_BN_Leaky(*args, **kwargs):
 #---------------------------------------------------# 
 
 #######################################################################################
-#######                             RG MOD7                                     #######
+#######                             RG MOD8                                     #######
 #######                           01/04/2021                                    #######
 #######     OUT 59,60,78,79,85,86,117,118,120,132,133,135                       #######
-#######     MOD 57      IN 58                                                   #######
+#######     MOD 57,97,103,      IN 58                                           #######
 #######################################################################################
 
 def make_five_convs(x, num_filters):
@@ -84,13 +84,13 @@ def yolo_body(inputs, num_anchors, num_classes):
     P5 = Concatenate()([maxpool1, maxpool2, maxpool3, P5])
     #P5 = DarknetConv2D_BN_Leaky(512, (1,1))(P5)
     #P5 = DarknetConv2D_BN_Leaky(1024, (3,3))(P5)
-    P5 = DarknetConv2D_BN_Leaky(512, (1,1))(P5)
+    #P5 = DarknetConv2D_BN_Leaky(512, (1,1))(P5)
 
     # 13,13,512 -> 13,13,256 -> 26,26,256
     P5_upsample = compose(DarknetConv2D_BN_Leaky(256, (1,1)), UpSampling2D(2))(P5)
     # 26,26,512 -> 26,26,256
     P4 = DarknetConv2D_BN_Leaky(256, (1,1))(feat2)
-    # 26,26,256 + 26,26,256 -> 26,26,512
+    P4 = make_five_convs(P4,256)    # 26,26,256 + 26,26,256 -> 26,26,512
     P4 = Concatenate()([P4, P5_upsample])
     
     # 26,26,512 -> 26,26,256 -> 26,26,512 -> 26,26,256 -> 26,26,512 -> 26,26,256
@@ -100,7 +100,7 @@ def yolo_body(inputs, num_anchors, num_classes):
     P4_upsample = compose(DarknetConv2D_BN_Leaky(128, (1,1)), UpSampling2D(2))(P4)
     # 52,52,256 -> 52,52,128
     P3 = DarknetConv2D_BN_Leaky(128, (1,1))(feat1)
-    # 52,52,128 + 52,52,128 -> 52,52,256
+    P3 = make_five_convs(P3,128)# 52,52,128 + 52,52,128 -> 52,52,256
     P3 = Concatenate()([P3, P4_upsample])
 
     # 52,52,256 -> 52,52,128 -> 52,52,256 -> 52,52,128 -> 52,52,256 -> 52,52,128
